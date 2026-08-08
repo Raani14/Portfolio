@@ -45,3 +45,7 @@
 
 /* Smooth anchor scrolling offset for fixed navbar */
 section[id] { scroll-margin-top: 80px; }
+
+/* Hide scrollbar for horizontal scroll strips */
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }

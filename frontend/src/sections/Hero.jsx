@@ -1,6 +1,6 @@
-import React, { useRef, useEffect, useState } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
-import { Mail, ArrowRight, ArrowDown } from 'lucide-react';
+import React, { useRef, useEffect, useState, useCallback } from 'react';
+import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
+import { Mail, ArrowRight, ArrowDown, ChevronLeft, ChevronRight } from 'lucide-react';
 import { FaGithub, FaLinkedin } from 'react-icons/fa';
 import { portfolioData } from '../data/portfolioData';
 
@@ -8,83 +8,220 @@ const prefersReducedMotion = () =>
   typeof window !== 'undefined' &&
   window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-// Mini browser frame wrapping a project screenshot
-function BrowserCard({ src, alt, className, style }) {
+// All hero showcase images
+const heroSlides = [
+  { src: '/images/noah-naturals.png', alt: 'Noah Naturals Shopify storefront developed by Rani Rakesh Gangurde', label: 'Noah Naturals' },
+  { src: '/images/shabari-naturals.png', alt: 'Shabari Naturals Shopify storefront developed by Rani Rakesh Gangurde', label: 'Shabari Naturals' },
+  { src: '/images/niibhz-clothing.png', alt: 'Niibhz Clothing Shopify storefront customized by Rani Rakesh Gangurde', label: 'Niibhz Clothing' },
+  { src: '/images/meru-store.png', alt: 'Meru fashion store designed by Rani Rakesh Gangurde', label: 'Meru Store' },
+  { src: '/images/elanor-perfume.png', alt: 'Elanor Perfume store designed by Rani Rakesh Gangurde', label: 'Elanor Perfume' },
+  { src: '/images/luminescence-store.png', alt: 'Luminescence luxury store designed by Rani Rakesh Gangurde', label: 'Luminescence' },
+];
+
+// Slide transition variants
+const slideVariants = {
+  enter: (direction) => ({
+    x: direction > 0 ? 120 : -120,
+    opacity: 0,
+    scale: 0.94,
+  }),
+  center: {
+    x: 0,
+    opacity: 1,
+    scale: 1,
+  },
+  exit: (direction) => ({
+    x: direction > 0 ? -120 : 120,
+    opacity: 0,
+    scale: 0.94,
+  }),
+};
+
+function ProjectShowcase() {
+  const [[current, direction], setCurrent] = useState([0, 1]);
+  const timerRef = useRef(null);
+  const reduced = prefersReducedMotion();
+
+  const goTo = useCallback((idx, dir) => {
+    setCurrent([idx, dir]);
+  }, []);
+
+  const next = useCallback(() => {
+    goTo((current + 1) % heroSlides.length, 1);
+  }, [current, goTo]);
+
+  const prev = useCallback(() => {
+    goTo((current - 1 + heroSlides.length) % heroSlides.length, -1);
+  }, [current, goTo]);
+
+  // Auto-advance every 4 seconds
+  useEffect(() => {
+    timerRef.current = setInterval(next, 4000);
+    return () => clearInterval(timerRef.current);
+  }, [next]);
+
+  // Pause on hover
+  const pause = () => clearInterval(timerRef.current);
+  const resume = () => {
+    clearInterval(timerRef.current);
+    timerRef.current = setInterval(next, 4000);
+  };
+
+  const slide = heroSlides[current];
+
   return (
     <div
-      className={`rounded-xl overflow-hidden shadow-[0_24px_60px_rgba(0,0,0,0.55)] border border-white/10 bg-slate-800 ${className}`}
-      style={style}
+      className="relative w-full"
+      onMouseEnter={pause}
+      onMouseLeave={resume}
     >
-      {/* Browser chrome */}
-      <div className="bg-slate-700/90 px-3 py-2 flex items-center gap-2 border-b border-white/10">
-        <span className="w-2.5 h-2.5 rounded-full bg-red-400/70" />
-        <span className="w-2.5 h-2.5 rounded-full bg-yellow-400/70" />
-        <span className="w-2.5 h-2.5 rounded-full bg-green-400/70" />
-        <div className="flex-1 mx-2 bg-slate-600/60 rounded text-[9px] text-slate-400 px-2 py-0.5 truncate">{alt.split(' ')[0].toLowerCase()}.com</div>
+      {/* Browser frame */}
+      <div className="rounded-2xl overflow-hidden bg-slate-800/80 border border-slate-700/50 shadow-[0_30px_80px_rgba(0,0,0,0.5)]">
+        {/* Chrome bar */}
+        <div className="bg-slate-700/70 px-4 py-2.5 flex items-center gap-2.5 border-b border-slate-600/30">
+          <div className="flex gap-1.5">
+            <span className="w-2.5 h-2.5 rounded-full bg-red-400/70" />
+            <span className="w-2.5 h-2.5 rounded-full bg-yellow-400/70" />
+            <span className="w-2.5 h-2.5 rounded-full bg-green-400/70" />
+          </div>
+          <div className="flex-1 bg-slate-600/40 rounded-md text-[11px] text-slate-400 px-3 py-1 font-mono truncate">
+            {slide.label.toLowerCase().replace(/\s/g, '')}.com
+          </div>
+        </div>
+
+        {/* Image area */}
+        <div className="relative aspect-[16/9] overflow-hidden bg-slate-900">
+          <AnimatePresence initial={false} custom={direction} mode="wait">
+            <motion.img
+              key={current}
+              src={slide.src}
+              alt={slide.alt}
+              custom={direction}
+              variants={reduced ? {} : slideVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+              className="absolute inset-0 w-full h-full object-cover object-top"
+              loading={current === 0 ? 'eager' : 'lazy'}
+              decoding="async"
+            />
+          </AnimatePresence>
+
+          {/* Gradient overlay at bottom */}
+          <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-black/40 to-transparent pointer-events-none" />
+
+          {/* Project label */}
+          <motion.div
+            key={`label-${current}`}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.25, duration: 0.4 }}
+            className="absolute bottom-4 left-5 bg-black/50 backdrop-blur-md rounded-lg px-3 py-1.5 text-white text-xs font-semibold border border-white/10"
+          >
+            {slide.label}
+          </motion.div>
+        </div>
       </div>
-      <img
-        src={src}
-        alt={alt}
-        loading="lazy"
-        decoding="async"
-        className="w-full block"
-        style={{ display: 'block', objectFit: 'cover', objectPosition: 'top' }}
-      />
+
+      {/* Controls */}
+      <div className="flex items-center justify-between mt-5">
+        {/* Dots */}
+        <div className="flex gap-2">
+          {heroSlides.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => goTo(i, i > current ? 1 : -1)}
+              aria-label={`Go to slide ${i + 1}`}
+              className={`h-1.5 rounded-full transition-all duration-300 ${
+                i === current
+                  ? 'w-8 bg-blue-500'
+                  : 'w-3 bg-slate-700 hover:bg-slate-600'
+              }`}
+            />
+          ))}
+        </div>
+
+        {/* Arrows */}
+        <div className="flex gap-2">
+          <button
+            onClick={prev}
+            aria-label="Previous project"
+            className="w-9 h-9 rounded-full border border-slate-700 hover:border-slate-500 flex items-center justify-center text-slate-400 hover:text-white transition-colors hover:bg-slate-800"
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </button>
+          <button
+            onClick={next}
+            aria-label="Next project"
+            className="w-9 h-9 rounded-full border border-slate-700 hover:border-slate-500 flex items-center justify-center text-slate-400 hover:text-white transition-colors hover:bg-slate-800"
+          >
+            <ChevronRight className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+
+      {/* Counter */}
+      <div className="mt-3 text-right text-xs text-slate-600 font-mono">
+        <span className="text-blue-400">{String(current + 1).padStart(2, '0')}</span>
+        <span className="mx-1">/</span>
+        <span>{String(heroSlides.length).padStart(2, '0')}</span>
+      </div>
+    </div>
+  );
+}
+
+// Mobile-only: simple horizontal scrolling strip
+function MobileShowcase() {
+  return (
+    <div className="lg:hidden mt-10 -mx-6">
+      <div className="flex gap-4 overflow-x-auto px-6 pb-4 snap-x snap-mandatory scrollbar-hide" style={{ scrollbarWidth: 'none' }}>
+        {heroSlides.map((slide, i) => (
+          <div
+            key={i}
+            className="snap-center flex-shrink-0 w-[85vw] max-w-sm rounded-xl overflow-hidden bg-slate-800 border border-slate-700/50 shadow-xl"
+          >
+            <div className="bg-slate-700/70 px-3 py-2 flex items-center gap-2 border-b border-slate-600/30">
+              <div className="flex gap-1">
+                <span className="w-2 h-2 rounded-full bg-red-400/60" />
+                <span className="w-2 h-2 rounded-full bg-yellow-400/60" />
+                <span className="w-2 h-2 rounded-full bg-green-400/60" />
+              </div>
+              <span className="text-[10px] text-slate-500 font-mono">{slide.label}</span>
+            </div>
+            <img
+              src={slide.src}
+              alt={slide.alt}
+              loading="lazy"
+              decoding="async"
+              className="w-full aspect-[16/9] object-cover object-top"
+            />
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
 
 export default function Hero() {
-  const { name, description, socials, photo } = portfolioData.hero;
-  const { shopifyWork } = portfolioData;
-
-  const heroRef = useRef(null);
-  const mouseRef = useRef({ x: 0, y: 0 });
-  const [mouse, setMouse] = useState({ x: 0, y: 0 });
+  const { name, socials } = portfolioData.hero;
   const reduced = prefersReducedMotion();
 
   const { scrollY } = useScroll();
   const contentY = useTransform(scrollY, [0, 500], [0, -60]);
   const contentOpacity = useTransform(scrollY, [0, 380], [1, 0]);
-  const collageY = useTransform(scrollY, [0, 500], [0, -30]);
-
-  useEffect(() => {
-    if (reduced) return;
-    let rafId;
-    const onMove = (e) => {
-      mouseRef.current = {
-        x: (e.clientX / window.innerWidth - 0.5),
-        y: (e.clientY / window.innerHeight - 0.5),
-      };
-    };
-    const tick = () => {
-      setMouse((prev) => ({
-        x: prev.x + (mouseRef.current.x - prev.x) * 0.06,
-        y: prev.y + (mouseRef.current.y - prev.y) * 0.06,
-      }));
-      rafId = requestAnimationFrame(tick);
-    };
-    window.addEventListener('mousemove', onMove);
-    rafId = requestAnimationFrame(tick);
-    return () => {
-      window.removeEventListener('mousemove', onMove);
-      cancelAnimationFrame(rafId);
-    };
-  }, [reduced]);
 
   return (
     <section
       id="hero"
-      ref={heroRef}
       className="relative min-h-screen flex items-center overflow-hidden"
     >
       {/* Background */}
       <div className="absolute inset-0 bg-[#080e1a]" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_80%_40%,rgba(59,130,246,0.07),transparent)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_75%_40%,rgba(59,130,246,0.07),transparent)]" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_20%_70%,rgba(139,92,246,0.05),transparent)]" />
-      {/* Subtle dot grid */}
       <div
-        className="absolute inset-0 opacity-[0.03]"
+        className="absolute inset-0 opacity-[0.025]"
         style={{
           backgroundImage: 'radial-gradient(white 1px, transparent 1px)',
           backgroundSize: '36px 36px',
@@ -92,14 +229,14 @@ export default function Hero() {
       />
 
       <div className="relative z-10 w-full max-w-7xl mx-auto px-6 pt-24 pb-16">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center min-h-[calc(100vh-96px)]">
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center min-h-[calc(100vh-96px)]">
 
           {/* LEFT — Personal introduction */}
           <motion.div
             style={reduced ? {} : { y: contentY, opacity: contentOpacity }}
             className="flex flex-col justify-center"
           >
-            {/* Greeting tag */}
+            {/* Greeting */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -110,7 +247,7 @@ export default function Hero() {
               <span className="text-blue-400 text-sm font-medium tracking-widest uppercase">Hi, I'm Rani</span>
             </motion.div>
 
-            {/* Main headline */}
+            {/* Headline */}
             <motion.h1
               initial={{ opacity: 0, y: 28 }}
               animate={{ opacity: 1, y: 0 }}
@@ -128,7 +265,7 @@ export default function Hero() {
               AI-powered apps.
             </motion.h1>
 
-            {/* Sub text */}
+            {/* Sub-text */}
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -138,7 +275,7 @@ export default function Hero() {
               I turn ideas and Figma designs into responsive websites, Shopify experiences, and intelligent applications — with clean code and purposeful design.
             </motion.p>
 
-            {/* Name — for SEO */}
+            {/* SEO name */}
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -205,109 +342,36 @@ export default function Hero() {
                 <Mail size={20} />
               </a>
               <span className="ml-auto text-xs text-slate-600 hidden sm:block">
-                Available for freelance & full-time
+                Available for freelance &amp; full-time
               </span>
             </motion.div>
           </motion.div>
 
-          {/* RIGHT — Real project screenshot collage */}
+          {/* RIGHT — Project Showcase Slider (desktop) */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.96 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.9, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-            style={reduced ? {} : { y: collageY }}
-            className="relative hidden lg:flex items-center justify-center h-[580px]"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+            className="hidden lg:block"
           >
-            {/* Main card — Noah Naturals */}
-            <motion.div
-              className="absolute"
-              style={
-                reduced
-                  ? { left: '0%', top: '5%', width: '72%', rotate: '-1deg' }
-                  : {
-                      left: '0%',
-                      top: '5%',
-                      width: '72%',
-                      rotate: '-1deg',
-                      x: mouse.x * -12,
-                      y: mouse.y * -8,
-                    }
-              }
-              transition={{ type: 'spring', stiffness: 80, damping: 20 }}
-            >
-              <BrowserCard
-                src="/images/noah-naturals.png"
-                alt="Noah Naturals Shopify storefront developed by Rani Rakesh Gangurde"
-                style={{ height: '300px' }}
-              />
-            </motion.div>
-
-            {/* Secondary card — Shabari Naturals */}
-            <motion.div
-              className="absolute"
-              style={
-                reduced
-                  ? { right: '0%', top: '20%', width: '55%', rotate: '2deg' }
-                  : {
-                      right: '0%',
-                      top: '20%',
-                      width: '55%',
-                      rotate: '2deg',
-                      x: mouse.x * 10,
-                      y: mouse.y * 6,
-                    }
-              }
-              transition={{ type: 'spring', stiffness: 70, damping: 20 }}
-            >
-              <BrowserCard
-                src="/images/shabari-naturals.png"
-                alt="Shabari Naturals Shopify storefront developed by Rani Rakesh Gangurde"
-                style={{ height: '200px' }}
-              />
-            </motion.div>
-
-            {/* Third card — Niibhz */}
-            <motion.div
-              className="absolute"
-              style={
-                reduced
-                  ? { left: '8%', bottom: '2%', width: '50%', rotate: '1.5deg' }
-                  : {
-                      left: '8%',
-                      bottom: '2%',
-                      width: '50%',
-                      rotate: '1.5deg',
-                      x: mouse.x * -8,
-                      y: mouse.y * 10,
-                    }
-              }
-              transition={{ type: 'spring', stiffness: 60, damping: 18 }}
-            >
-              <BrowserCard
-                src="/images/niibhz-clothing.png"
-                alt="Niibhz Clothing Shopify storefront customized by Rani Rakesh Gangurde"
-                style={{ height: '180px' }}
-              />
-            </motion.div>
-
-            {/* Floating tag — "3 Live Shopify Stores" */}
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1.1 }}
-              style={reduced ? {} : { x: mouse.x * 15, y: mouse.y * 10 }}
-              className="absolute top-0 right-4 bg-green-500/10 border border-green-500/30 rounded-xl px-4 py-2 text-green-400 text-xs font-semibold backdrop-blur-sm z-10"
-            >
-              ✦ 3 Live Shopify Stores
-            </motion.div>
+            <ProjectShowcase />
           </motion.div>
         </div>
+
+        {/* Mobile showcase */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+        >
+          <MobileShowcase />
+        </motion.div>
 
         {/* Scroll cue */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 1.4 }}
+          transition={{ delay: 1.2 }}
           className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-slate-600"
         >
           <span className="text-xs tracking-widest uppercase">Scroll</span>
