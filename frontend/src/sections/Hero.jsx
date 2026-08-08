@@ -208,8 +208,8 @@ export default function Hero() {
   const reduced = prefersReducedMotion();
 
   const { scrollY } = useScroll();
-  const contentY = useTransform(scrollY, [0, 500], [0, -60]);
-  const contentOpacity = useTransform(scrollY, [0, 380], [1, 0]);
+  const contentY = useTransform(scrollY, [0, 900], [0, -50]);
+  const contentOpacity = useTransform(scrollY, [0, 700], [1, 0]);
 
   return (
     <section
@@ -229,7 +229,7 @@ export default function Hero() {
       />
 
       <div className="relative z-10 w-full max-w-7xl mx-auto px-6 pt-24 pb-16">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center min-h-[calc(100vh-96px)]">
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-start min-h-[calc(100vh-96px)] pt-8 lg:pt-16">
 
           {/* LEFT — Personal introduction */}
           <motion.div
