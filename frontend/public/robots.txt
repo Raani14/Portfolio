@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+
+Sitemap: https://your-domain.com/sitemap.xml
+
+# Note: Replace "your-domain.com" with your actual domain after deployment.
+# Also ensure your production site is publicly accessible before submitting to Google Search Console.

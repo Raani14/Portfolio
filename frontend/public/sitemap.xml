@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!--
+    IMPORTANT: Replace "https://your-domain.com" with your actual production domain.
+    After deployment:
+    1. Go to https://search.google.com/search-console
+    2. Add your domain as a property
+    3. Verify ownership (use the HTML meta tag in index.html — see the comment there)
+    4. Submit this sitemap URL: https://your-domain.com/sitemap.xml
+    5. Request indexing for the homepage
+  -->
+  <url>
+    <loc>https://your-domain.com/</loc>
+    <lastmod>2026-08-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>1.0</priority>
+  </url>
+</urlset>
