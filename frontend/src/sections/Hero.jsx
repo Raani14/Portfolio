@@ -1,6 +1,6 @@
-import React, { useRef, useEffect, useState, useCallback } from 'react';
-import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
-import { Mail, ArrowRight, ArrowDown, ChevronLeft, ChevronRight } from 'lucide-react';
+import React from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
+import { Mail, ArrowRight, ArrowDown } from 'lucide-react';
 import { FaGithub, FaLinkedin } from 'react-icons/fa';
 import { portfolioData } from '../data/portfolioData';
 
@@ -8,213 +8,52 @@ const prefersReducedMotion = () =>
   typeof window !== 'undefined' &&
   window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-// All hero showcase images
-const heroSlides = [
-  { src: '/images/noah-naturals.png', alt: 'Noah Naturals Shopify storefront developed by Rani Rakesh Gangurde', label: 'Noah Naturals' },
-  { src: '/images/indian-legal-ai.png', alt: 'Indian Legal AI Assistant built by Rani Rakesh Gangurde', label: 'Indian Legal AI' },
-  { src: '/images/shabari-naturals.png', alt: 'Shabari Naturals Shopify storefront developed by Rani Rakesh Gangurde', label: 'Shabari Naturals' },
-  { src: '/images/digital-forensics.png', alt: 'Digital Forensics Platform built by Rani Rakesh Gangurde', label: 'Digital Forensics' },
-  { src: '/images/niibhz-clothing.png', alt: 'Niibhz Clothing Shopify storefront customized by Rani Rakesh Gangurde', label: 'Niibhz Clothing' },
-  { src: '/images/samyak-naturals.png', alt: 'Samyak Naturals Shopify storefront customized by Rani Rakesh Gangurde', label: 'Samyak Naturals' },
-  { src: '/images/bert-visualizer.png', alt: 'BERT Attention Visualizer built by Rani Rakesh Gangurde', label: 'BERT Visualizer' },
-  { src: '/images/beauty-theme.jpg', alt: 'Beauty Product Shopify theme developed by Rani Rakesh Gangurde', label: 'Beauty Theme' },
-  { src: '/images/meru-store.png', alt: 'Meru fashion store designed by Rani Rakesh Gangurde', label: 'Meru Store' },
-  { src: '/images/elanor-perfume.png', alt: 'Elanor Perfume store designed by Rani Rakesh Gangurde', label: 'Elanor Perfume' },
-  { src: '/images/luminescence-store.png', alt: 'Luminescence luxury store designed by Rani Rakesh Gangurde', label: 'Luminescence' },
-];
+const BrowserFrame = ({ src, alt, label, className = '', style = {}, whileHover, initial, animate, transition }) => {
+  return (
+    <motion.div
+      initial={initial}
+      animate={animate}
+      transition={transition}
+      whileHover={whileHover}
+      style={style}
+      className={`rounded-2xl overflow-hidden bg-slate-800/80 border border-slate-700/50 shadow-[0_30px_80px_rgba(0,0,0,0.5)] ${className}`}
+    >
+      {/* Chrome bar */}
+      <div className="bg-slate-700/70 px-4 py-2.5 flex items-center gap-2.5 border-b border-slate-600/30">
+        <div className="flex gap-1.5">
+          <span className="w-2.5 h-2.5 rounded-full bg-red-400/70" />
+          <span className="w-2.5 h-2.5 rounded-full bg-yellow-400/70" />
+          <span className="w-2.5 h-2.5 rounded-full bg-green-400/70" />
+        </div>
+        <div className="flex-1 bg-slate-600/40 rounded-md text-[11px] text-slate-400 px-3 py-1 font-mono truncate">
+          {label.toLowerCase().replace(/\s/g, '')}.com
+        </div>
+      </div>
 
-// Slide transition variants
-const slideVariants = {
-  enter: (direction) => ({
-    x: direction > 0 ? 120 : -120,
-    opacity: 0,
-    scale: 0.94,
-  }),
-  center: {
-    x: 0,
-    opacity: 1,
-    scale: 1,
-  },
-  exit: (direction) => ({
-    x: direction > 0 ? -120 : 120,
-    opacity: 0,
-    scale: 0.94,
-  }),
+      {/* Image area */}
+      <div className="relative aspect-[16/9] overflow-hidden bg-slate-900">
+        <img
+          src={src}
+          alt={alt}
+          className="w-full h-full object-cover object-top"
+          loading="eager"
+          decoding="async"
+        />
+        {/* Gradient overlay at bottom */}
+        <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-black/40 to-transparent pointer-events-none" />
+      </div>
+    </motion.div>
+  );
 };
 
-function ProjectShowcase() {
-  const [[current, direction], setCurrent] = useState([0, 1]);
-  const timerRef = useRef(null);
-  const reduced = prefersReducedMotion();
-
-  const goTo = useCallback((idx, dir) => {
-    setCurrent([idx, dir]);
-  }, []);
-
-  const next = useCallback(() => {
-    goTo((current + 1) % heroSlides.length, 1);
-  }, [current, goTo]);
-
-  const prev = useCallback(() => {
-    goTo((current - 1 + heroSlides.length) % heroSlides.length, -1);
-  }, [current, goTo]);
-
-  // Auto-advance every 4 seconds
-  useEffect(() => {
-    timerRef.current = setInterval(next, 4000);
-    return () => clearInterval(timerRef.current);
-  }, [next]);
-
-  // Pause on hover
-  const pause = () => clearInterval(timerRef.current);
-  const resume = () => {
-    clearInterval(timerRef.current);
-    timerRef.current = setInterval(next, 4000);
-  };
-
-  const slide = heroSlides[current];
-
-  return (
-    <div
-      className="relative w-full"
-      onMouseEnter={pause}
-      onMouseLeave={resume}
-    >
-      {/* Browser frame */}
-      <div className="rounded-2xl overflow-hidden bg-slate-800/80 border border-slate-700/50 shadow-[0_30px_80px_rgba(0,0,0,0.5)]">
-        {/* Chrome bar */}
-        <div className="bg-slate-700/70 px-4 py-2.5 flex items-center gap-2.5 border-b border-slate-600/30">
-          <div className="flex gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-red-400/70" />
-            <span className="w-2.5 h-2.5 rounded-full bg-yellow-400/70" />
-            <span className="w-2.5 h-2.5 rounded-full bg-green-400/70" />
-          </div>
-          <div className="flex-1 bg-slate-600/40 rounded-md text-[11px] text-slate-400 px-3 py-1 font-mono truncate">
-            {slide.label.toLowerCase().replace(/\s/g, '')}.com
-          </div>
-        </div>
-
-        {/* Image area */}
-        <div className="relative aspect-[16/9] overflow-hidden bg-slate-900">
-          <AnimatePresence initial={false} custom={direction} mode="wait">
-            <motion.img
-              key={current}
-              src={slide.src}
-              alt={slide.alt}
-              custom={direction}
-              variants={reduced ? {} : slideVariants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-              className="absolute inset-0 w-full h-full object-cover object-top"
-              loading={current === 0 ? 'eager' : 'lazy'}
-              decoding="async"
-            />
-          </AnimatePresence>
-
-          {/* Gradient overlay at bottom */}
-          <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-black/40 to-transparent pointer-events-none" />
-
-          {/* Project label */}
-          <motion.div
-            key={`label-${current}`}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.25, duration: 0.4 }}
-            className="absolute bottom-4 left-5 bg-black/50 backdrop-blur-md rounded-lg px-3 py-1.5 text-white text-xs font-semibold border border-white/10"
-          >
-            {slide.label}
-          </motion.div>
-        </div>
-      </div>
-
-      {/* Controls */}
-      <div className="flex items-center justify-between mt-5">
-        {/* Dots */}
-        <div className="flex gap-2">
-          {heroSlides.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => goTo(i, i > current ? 1 : -1)}
-              aria-label={`Go to slide ${i + 1}`}
-              className={`h-1.5 rounded-full transition-all duration-300 ${
-                i === current
-                  ? 'w-8 bg-blue-500'
-                  : 'w-3 bg-slate-700 hover:bg-slate-600'
-              }`}
-            />
-          ))}
-        </div>
-
-        {/* Arrows */}
-        <div className="flex gap-2">
-          <button
-            onClick={prev}
-            aria-label="Previous project"
-            className="w-9 h-9 rounded-full border border-slate-700 hover:border-slate-500 flex items-center justify-center text-slate-400 hover:text-white transition-colors hover:bg-slate-800"
-          >
-            <ChevronLeft className="w-4 h-4" />
-          </button>
-          <button
-            onClick={next}
-            aria-label="Next project"
-            className="w-9 h-9 rounded-full border border-slate-700 hover:border-slate-500 flex items-center justify-center text-slate-400 hover:text-white transition-colors hover:bg-slate-800"
-          >
-            <ChevronRight className="w-4 h-4" />
-          </button>
-        </div>
-      </div>
-
-      {/* Counter */}
-      <div className="mt-3 text-right text-xs text-slate-600 font-mono">
-        <span className="text-blue-400">{String(current + 1).padStart(2, '0')}</span>
-        <span className="mx-1">/</span>
-        <span>{String(heroSlides.length).padStart(2, '0')}</span>
-      </div>
-    </div>
-  );
-}
-
-// Mobile-only: simple horizontal scrolling strip
-function MobileShowcase() {
-  return (
-    <div className="lg:hidden mt-10 -mx-6">
-      <div className="flex gap-4 overflow-x-auto px-6 pb-4 snap-x snap-mandatory scrollbar-hide" style={{ scrollbarWidth: 'none' }}>
-        {heroSlides.map((slide, i) => (
-          <div
-            key={i}
-            className="snap-center flex-shrink-0 w-[85vw] max-w-sm rounded-xl overflow-hidden bg-slate-800 border border-slate-700/50 shadow-xl"
-          >
-            <div className="bg-slate-700/70 px-3 py-2 flex items-center gap-2 border-b border-slate-600/30">
-              <div className="flex gap-1">
-                <span className="w-2 h-2 rounded-full bg-red-400/60" />
-                <span className="w-2 h-2 rounded-full bg-yellow-400/60" />
-                <span className="w-2 h-2 rounded-full bg-green-400/60" />
-              </div>
-              <span className="text-[10px] text-slate-500 font-mono">{slide.label}</span>
-            </div>
-            <img
-              src={slide.src}
-              alt={slide.alt}
-              loading="lazy"
-              decoding="async"
-              className="w-full aspect-[16/9] object-cover object-top"
-            />
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
 export default function Hero() {
-  const { name, socials } = portfolioData.hero;
+  const { socials } = portfolioData.hero;
   const reduced = prefersReducedMotion();
 
   const { scrollY } = useScroll();
-  const contentY = useTransform(scrollY, [0, 900], [0, -50]);
-  const contentOpacity = useTransform(scrollY, [0, 700], [1, 0]);
+  const textY = useTransform(scrollY, [0, 900], [0, -50]);
+  const textOpacity = useTransform(scrollY, [0, 700], [1, 0]);
+  const visualsY = useTransform(scrollY, [0, 900], [0, -30]);
 
   return (
     <section
@@ -234,89 +73,83 @@ export default function Hero() {
       />
 
       <div className="relative z-10 w-full max-w-7xl mx-auto px-6 pt-24 pb-16">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-start min-h-[calc(100vh-96px)] pt-8 lg:pt-16">
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center min-h-[calc(100vh-96px)] pt-8 lg:pt-16">
 
           {/* LEFT — Personal introduction */}
           <motion.div
-            style={reduced ? {} : { y: contentY, opacity: contentOpacity }}
+            style={reduced ? {} : { y: textY, opacity: textOpacity }}
             className="flex flex-col justify-center"
           >
             {/* Greeting */}
             <motion.div
-              initial={{ opacity: 0, x: -20 }}
+              initial={reduced ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6 }}
+              transition={{ duration: 0.6, delay: 0 }}
               className="inline-flex items-center gap-2 mb-6 w-max"
             >
               <span className="w-8 h-px bg-blue-500" />
-              <span className="text-blue-400 text-sm font-medium tracking-widest uppercase">Hi, I'm Rani</span>
+              <span className="text-blue-400 text-sm font-medium tracking-widest uppercase">Hi, I'm Rani.</span>
             </motion.div>
 
             {/* Headline */}
             <motion.h1
-              initial={{ opacity: 0, y: 28 }}
+              initial={reduced ? { opacity: 1, y: 0 } : { opacity: 0, y: 28 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.75, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.75, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
               className="text-4xl md:text-5xl lg:text-[3.4rem] font-extrabold leading-[1.1] tracking-tight mb-6 text-white"
             >
-              Software Developer
+              I turn ideas into
               <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-violet-400 to-blue-400">
-                building web experiences,
+                interactive digital experiences.
               </span>
-              <br />
-              Shopify stores &amp;
-              <br />
-              AI-powered apps.
             </motion.h1>
 
-            {/* Sub-text */}
+            {/* Specialization line */}
             <motion.p
-              initial={{ opacity: 0, y: 20 }}
+              initial={reduced ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.25 }}
+              className="text-slate-400 text-sm md:text-base tracking-widest uppercase mb-6 font-medium"
+            >
+              Websites &middot; Shopify &middot; Full Stack &middot; AI/ML
+            </motion.p>
+
+            {/* Supporting text */}
+            <motion.p
+              initial={reduced ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.35 }}
               className="text-slate-400 text-lg leading-relaxed mb-8 max-w-lg"
             >
-              I turn ideas and Figma designs into responsive websites, Shopify experiences, and intelligent applications — with clean code and purposeful design.
+              I build responsive websites, custom Shopify experiences, and AI-powered applications — with clean code, thoughtful design, and purposeful interactions.
             </motion.p>
 
-            {/* SEO name */}
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.3 }}
-              className="text-slate-600 text-xs font-medium tracking-widest uppercase mb-8"
-            >
-              Rani Rakesh Gangurde — Nashik, India
-            </motion.p>
-
-            {/* Specialty pills */}
+            {/* Name line & Badge */}
             <motion.div
-              initial={{ opacity: 0, y: 12 }}
+              initial={reduced ? { opacity: 1, y: 0 } : { opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.35 }}
-              className="flex flex-wrap gap-2 mb-10"
+              transition={{ duration: 0.6, delay: 0.45 }}
+              className="flex flex-col sm:flex-row sm:items-center gap-4 mb-10"
             >
-              {[
-                { t: 'Shopify', c: 'border-green-600/40 text-green-400 bg-green-500/5' },
-                { t: 'React.js', c: 'border-blue-600/40 text-blue-400 bg-blue-500/5' },
-                { t: 'Python', c: 'border-yellow-600/30 text-yellow-400 bg-yellow-500/5' },
-                { t: 'AI / ML', c: 'border-violet-600/40 text-violet-400 bg-violet-500/5' },
-                { t: 'Figma → Dev', c: 'border-pink-600/40 text-pink-400 bg-pink-500/5' },
-              ].map(({ t, c }) => (
-                <span key={t} className={`px-3 py-1 rounded-full text-xs font-semibold border ${c}`}>{t}</span>
-              ))}
+              <p className="text-slate-600 text-xs font-medium tracking-widest uppercase">
+                RANI GANGURDE — NASHIK, INDIA
+              </p>
+              <span className="hidden sm:block w-1.5 h-1.5 rounded-full bg-slate-700"></span>
+              <span className="inline-block px-3 py-1 rounded-full text-xs font-semibold border border-blue-600/40 text-blue-400 bg-blue-500/5 w-max">
+                Real work. Real storefronts.
+              </span>
             </motion.div>
 
             {/* CTAs */}
             <motion.div
-              initial={{ opacity: 0, y: 16 }}
+              initial={reduced ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.45 }}
               className="flex flex-wrap gap-4 items-center"
             >
               <a
-                href="#projects"
+                href="#shopifywork"
                 className="group inline-flex items-center gap-2 px-7 py-3.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-xl transition-all shadow-[0_0_24px_rgba(37,99,235,0.3)] hover:shadow-[0_0_36px_rgba(37,99,235,0.5)] hover:-translate-y-0.5"
               >
                 Explore My Work
@@ -332,7 +165,7 @@ export default function Hero() {
 
             {/* Social links */}
             <motion.div
-              initial={{ opacity: 0 }}
+              initial={reduced ? { opacity: 1 } : { opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.65 }}
               className="flex items-center gap-6 mt-10 pt-8 border-t border-slate-800"
@@ -346,31 +179,64 @@ export default function Hero() {
               <a href={`mailto:${socials.email}`} aria-label="Email" className="text-slate-500 hover:text-white transition-colors">
                 <Mail size={20} />
               </a>
-              <span className="ml-auto text-xs text-slate-600 hidden sm:block">
-                Available for freelance &amp; full-time
-              </span>
             </motion.div>
           </motion.div>
 
-          {/* RIGHT — Project Showcase Slider (desktop) */}
+          {/* RIGHT — Layered Composition (Desktop) & Primary Image (Mobile) */}
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-            className="hidden lg:block"
+            style={reduced ? {} : { y: visualsY }}
+            className="relative w-full h-full min-h-[300px] sm:min-h-[400px] lg:min-h-[500px] flex items-center justify-center mt-10 lg:mt-0"
           >
-            <ProjectShowcase />
-          </motion.div>
-        </div>
+            {/* Tertiary: Niibhz Clothing (behind-right) - Hidden on mobile */}
+            <BrowserFrame
+              src="/images/niibhz-clothing.png"
+              alt="Niibhz Clothing"
+              label="Niibhz Clothing"
+              className="hidden lg:block absolute z-0"
+              style={{ 
+                right: '-5%', 
+                top: '5%', 
+                rotate: 2, 
+                width: '65%' 
+              }}
+              initial={reduced ? { opacity: 1, scale: 0.8 } : { opacity: 0, scale: 0.75 }}
+              animate={{ opacity: 0.6, scale: 0.8 }}
+              transition={{ duration: 0.8, delay: 0.75 }}
+              whileHover={reduced ? {} : { y: -4, opacity: 0.9, zIndex: 30 }}
+            />
 
-        {/* Mobile showcase */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-        >
-          <MobileShowcase />
-        </motion.div>
+            {/* Secondary: Shabari Naturals (behind-left) - Hidden on mobile */}
+            <BrowserFrame
+              src="/images/shabari-naturals.png"
+              alt="Shabari Naturals"
+              label="Shabari Naturals"
+              className="hidden lg:block absolute z-10"
+              style={{ 
+                left: '-5%', 
+                top: '-5%', 
+                rotate: -3, 
+                width: '65%' 
+              }}
+              initial={reduced ? { opacity: 1, scale: 0.85 } : { opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 0.8, scale: 0.85 }}
+              transition={{ duration: 0.8, delay: 0.65 }}
+              whileHover={reduced ? {} : { y: -4, opacity: 1, zIndex: 30 }}
+            />
+
+            {/* Primary: Noah Naturals (front-center) - Visible everywhere */}
+            <BrowserFrame
+              src="/images/noah-naturals.png"
+              alt="Noah Naturals"
+              label="Noah Naturals"
+              className="relative lg:absolute lg:left-[15%] lg:top-[15%] w-full lg:w-[70%] z-20 shadow-2xl"
+              initial={reduced ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
+              whileHover={reduced ? {} : { y: -4 }}
+            />
+          </motion.div>
+
+        </div>
 
         {/* Scroll cue */}
         <motion.div

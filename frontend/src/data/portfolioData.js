@@ -1,6 +1,6 @@
 export const portfolioData = {
   hero: {
-    name: "Rani Rakesh Gangurde",
+    name: "Rani Gangurde",
     title: "Software Developer | Full Stack | Shopify | AI/ML",
     subtitle: "Building Digital Experiences with Code, Commerce & AI.",
     description: "Software Developer with hands-on experience across Shopify, frontend development, Python backend, AI/ML, and full-stack development.",

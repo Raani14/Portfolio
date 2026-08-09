@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ExternalLink, ShoppingBag, X, ChevronDown } from 'lucide-react';
+import { ExternalLink, ShoppingBag, X } from 'lucide-react';
 import { portfolioData } from '../data/portfolioData';
 
 // Browser mockup wrapping a real screenshot
@@ -85,21 +85,18 @@ function ProjectModal({ project, onClose }) {
   );
 }
 
-// Single project card
-function ProjectCard({ project, index, onSelect }) {
+// Single project card (Live Stores)
+function LiveProjectCard({ project, index, onSelect }) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 50 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-80px' }}
-      transition={{ duration: 0.75, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }}
-      className={`grid md:grid-cols-12 gap-8 md:gap-12 items-center`}
-    >
+    <div className={`grid md:grid-cols-12 gap-8 md:gap-12 items-center`}>
       {/* Screenshot */}
       <motion.div
+        initial={{ opacity: 0, scale: 0.97 }}
+        whileInView={{ opacity: 1, scale: 1 }}
+        viewport={{ once: true, margin: '-80px' }}
+        transition={{ duration: 0.75, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
         className={`md:col-span-7 ${index % 2 === 1 ? 'md:order-2' : ''}`}
         whileHover={{ y: -6 }}
-        transition={{ type: 'spring', stiffness: 200, damping: 20 }}
       >
         <div
           className="cursor-pointer group relative"
@@ -119,11 +116,17 @@ function ProjectCard({ project, index, onSelect }) {
       </motion.div>
 
       {/* Content */}
-      <div className={`md:col-span-5 ${index % 2 === 1 ? 'md:order-1' : ''}`}>
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-80px' }}
+        transition={{ duration: 0.75, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+        className={`md:col-span-5 ${index % 2 === 1 ? 'md:order-1' : ''}`}
+      >
         <div className="flex items-center gap-2 mb-3">
           <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
           <span className="text-green-400 text-xs font-semibold uppercase tracking-wider">
-            {project.url ? 'Live Store' : 'Shopify Project'}
+            Live Store
           </span>
         </div>
         <h3 className="text-3xl md:text-4xl font-bold text-white mb-5">{project.title}</h3>
@@ -143,20 +146,76 @@ function ProjectCard({ project, index, onSelect }) {
             View Details
           </button>
         </div>
+      </motion.div>
+    </div>
+  );
+}
+
+// Work Sample card (Additional Work)
+function WorkSampleCard({ project, index, onSelect }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-60px' }}
+      transition={{ duration: 0.6, delay: index * 0.1 }}
+      className="bg-slate-800/40 border border-slate-700/60 rounded-2xl overflow-hidden flex flex-col hover:border-slate-600 transition-colors"
+    >
+      <div 
+        className="cursor-pointer relative group h-48 sm:h-56 overflow-hidden" 
+        onClick={() => onSelect(project)}
+      >
+        <img
+          src={project.image}
+          alt={project.alt}
+          className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
+        />
+        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
+          <span className="px-5 py-2.5 bg-slate-900/90 text-white text-sm font-medium rounded-full shadow-xl">
+            View Details
+          </span>
+        </div>
+      </div>
+      <div className="p-6 flex-1 flex flex-col">
+        <div className="flex items-center gap-2 mb-3">
+          <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+          <span className="text-amber-400 text-xs font-semibold uppercase tracking-wider">
+            Work Sample
+          </span>
+        </div>
+        <h3 className="text-xl font-bold text-white mb-3">{project.title}</h3>
+        <p className="text-slate-400 text-sm leading-relaxed mb-6 flex-1 line-clamp-3">
+          {project.description}
+        </p>
+        <div className="flex flex-wrap gap-2 mb-6">
+          {project.technologies.slice(0, 3).map((tech) => (
+            <span key={tech} className="px-2.5 py-1 bg-slate-800/80 text-amber-400/90 text-xs font-medium rounded-md border border-amber-900/30">
+              {tech}
+            </span>
+          ))}
+          {project.technologies.length > 3 && (
+            <span className="px-2.5 py-1 bg-slate-800/80 text-slate-400 text-xs font-medium rounded-md border border-slate-700">
+              +{project.technologies.length - 3}
+            </span>
+          )}
+        </div>
+        <button 
+          onClick={() => onSelect(project)}
+          className="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-white text-sm font-medium rounded-lg transition-colors border border-slate-700"
+        >
+          View Preview
+        </button>
       </div>
     </motion.div>
   );
 }
 
-const INITIAL_COUNT = 3;
-
 export default function ShopifyWork() {
   const { shopifyWork } = portfolioData;
-  const [showAll, setShowAll] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
 
-  const visibleProjects = showAll ? shopifyWork : shopifyWork.slice(0, INITIAL_COUNT);
-  const hasMore = shopifyWork.length > INITIAL_COUNT;
+  const liveStores = shopifyWork.filter((p) => p.url);
+  const additionalWork = shopifyWork.filter((p) => !p.url);
 
   return (
     <section id="shopifywork" className="py-28 border-b border-slate-800 relative overflow-hidden">
@@ -170,7 +229,7 @@ export default function ShopifyWork() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-60px' }}
           transition={{ duration: 0.6 }}
-          className="mb-16"
+          className="mb-20"
         >
           <div className="flex items-center gap-3 mb-3">
             <span className="w-8 h-px bg-green-500" />
@@ -179,7 +238,7 @@ export default function ShopifyWork() {
           <div className="flex items-end gap-4 mb-4">
             <div className="flex items-center gap-4">
               <ShoppingBag className="w-8 h-8 text-green-400" />
-              <h2 className="text-3xl md:text-5xl font-bold text-white">Selected Shopify Work</h2>
+              <h2 className="text-3xl md:text-5xl font-bold text-white">Shopify Work</h2>
             </div>
             <motion.span
               initial={{ opacity: 0 }}
@@ -193,14 +252,14 @@ export default function ShopifyWork() {
           </div>
           <div className="w-20 h-1 bg-gradient-to-r from-green-500 to-emerald-400 rounded-full mb-6" />
           <p className="text-slate-400 max-w-2xl text-lg leading-relaxed">
-            Real-world eCommerce storefronts I designed and built with Shopify Online Store 2.0 and Liquid — each one responsive and serving real customers.
+            Real storefronts. Custom experiences.
           </p>
         </motion.div>
 
-        {/* Projects */}
-        <div className="space-y-24">
-          {visibleProjects.map((project, index) => (
-            <ProjectCard
+        {/* Live Stores */}
+        <div className="space-y-28 mb-32">
+          {liveStores.map((project, index) => (
+            <LiveProjectCard
               key={project.title}
               project={project}
               index={index}
@@ -209,27 +268,30 @@ export default function ShopifyWork() {
           ))}
         </div>
 
-        {/* View More / View Less */}
-        {hasMore && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            className="flex justify-center mt-20"
-          >
-            <button
-              onClick={() => setShowAll(!showAll)}
-              className="group inline-flex items-center gap-3 px-8 py-4 bg-slate-800/60 hover:bg-slate-800 border border-slate-700 hover:border-green-500/40 text-slate-300 hover:text-white font-semibold rounded-xl transition-all hover:-translate-y-0.5"
+        {/* Additional Work */}
+        {additionalWork.length > 0 && (
+          <div className="mt-20">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="mb-10 flex items-center gap-4"
             >
-              {showAll ? 'Show Less' : `View All ${shopifyWork.length} Projects`}
-              <motion.div
-                animate={{ rotate: showAll ? 180 : 0 }}
-                transition={{ duration: 0.3 }}
-              >
-                <ChevronDown className="w-4 h-4" />
-              </motion.div>
-            </button>
-          </motion.div>
+              <h3 className="text-2xl font-bold text-white">More Shopify Work</h3>
+              <div className="h-px bg-slate-800 flex-1"></div>
+            </motion.div>
+            
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+              {additionalWork.map((project, index) => (
+                <WorkSampleCard
+                  key={project.title}
+                  project={project}
+                  index={index}
+                  onSelect={setSelectedProject}
+                />
+              ))}
+            </div>
+          </div>
         )}
       </div>
 

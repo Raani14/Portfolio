@@ -68,7 +68,7 @@ export default function Footer() {
 
         {/* Bottom */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-600">
-          <p>© 2026 Rani Rakesh Gangurde. All rights reserved.</p>
+          <p>© 2026 Rani Gangurde. All rights reserved.</p>
           <p className="flex items-center gap-1.5">
             Built with <Heart className="w-3.5 h-3.5 text-red-500" /> using React · Node.js · MongoDB
           </p>
