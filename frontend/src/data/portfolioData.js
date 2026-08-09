@@ -117,6 +117,7 @@ export const portfolioData = {
     },
     {
       title: "Samyak Naturals",
+      url: "https://samyaknaturals.com/",
       image: "/images/samyak-naturals.png",
       alt: "Samyak Naturals Shopify storefront customized by Rani Rakesh Gangurde",
       technologies: ["Shopify 2.0", "Liquid", "HTML5", "CSS3", "JavaScript", "Shopify Admin"],
