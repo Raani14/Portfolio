@@ -114,6 +114,20 @@ export const portfolioData = {
       alt: "Niibhz Clothing Shopify storefront customized by Rani Rakesh Gangurde",
       technologies: ["Shopify", "Liquid", "HTML", "CSS", "JavaScript"],
       description: "Customized Liquid sections, homepage, product and collection pages, theme components, mobile layouts, and storefront performance."
+    },
+    {
+      title: "Samyak Naturals",
+      image: "/images/samyak-naturals.png",
+      alt: "Samyak Naturals Shopify storefront customized by Rani Rakesh Gangurde",
+      technologies: ["Shopify 2.0", "Liquid", "HTML5", "CSS3", "JavaScript", "Shopify Admin"],
+      description: "Customized and enhanced the Shopify eCommerce storefront for a natural fragrance and personal care brand, developing responsive custom sections, promotional banners, product grids, collection layouts, application guides, and interactive storefront elements."
+    },
+    {
+      title: "Beauty Product Theme",
+      image: "/images/beauty-theme.jpg",
+      alt: "Beauty Product Shopify theme developed by Rani Rakesh Gangurde",
+      technologies: ["Shopify 2.0", "Liquid", "HTML5", "CSS3", "JavaScript"],
+      description: "Developed a custom beauty and skincare Shopify theme with reusable Liquid sections and interactive JavaScript components. Built custom hero banners, product cards, before-and-after sections, ingredient highlights, testimonials, skin quiz, routine builder, and step-by-step product routines."
     }
   ],
   education: [
