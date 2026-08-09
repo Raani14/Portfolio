@@ -1,99 +1,49 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ExternalLink, ArrowRight } from 'lucide-react';
+import { ExternalLink, ArrowRight, Scale, Shield, Brain, BarChart3 } from 'lucide-react';
 import { FaGithub } from 'react-icons/fa';
 import { portfolioData } from '../data/portfolioData';
 
-// Abstract SVG visual backgrounds per project
-const ProjectVisuals = {
-  'Indian Legal AI Assistant': () => (
-    <svg viewBox="0 0 300 160" className="w-full h-full opacity-60" aria-hidden="true">
-      <defs>
-        <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.3"/>
-          <stop offset="100%" stopColor="#8b5cf6" stopOpacity="0.1"/>
-        </linearGradient>
-      </defs>
-      <rect width="300" height="160" fill="url(#g1)"/>
-      {/* Document lines */}
-      {[30,45,60,75,90].map((y,i)=> <rect key={i} x="20" y={y} width={80+i*10} height="3" rx="1.5" fill="#3b82f6" opacity="0.3"/>)}
-      {/* Neural nodes */}
-      {[[160,40],[200,60],[240,35],[180,90],[220,110],[260,80]].map(([cx,cy],i)=>(
-        <g key={i}>
-          <circle cx={cx} cy={cy} r="5" fill="#8b5cf6" opacity="0.6"/>
-          {i>0 && <line x1={cx} y1={cy} x2={[[160,40],[200,60],[240,35],[180,90],[220,110]][i-1][0]} y2={[[160,40],[200,60],[240,35],[180,90],[220,110]][i-1][1]} stroke="#8b5cf6" strokeWidth="1" opacity="0.25"/>}
-        </g>
-      ))}
-      <circle cx="160" cy="40" r="12" fill="none" stroke="#3b82f6" strokeWidth="1" opacity="0.4"/>
-      <text x="155" y="44" fontSize="10" fill="#3b82f6" opacity="0.8">AI</text>
-    </svg>
-  ),
-  'Digital Forensics Platform': () => (
-    <svg viewBox="0 0 300 160" className="w-full h-full opacity-60" aria-hidden="true">
-      <defs>
-        <linearGradient id="g2" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#06b6d4" stopOpacity="0.2"/>
-          <stop offset="100%" stopColor="#10b981" stopOpacity="0.1"/>
-        </linearGradient>
-      </defs>
-      <rect width="300" height="160" fill="url(#g2)"/>
-      {/* Image grid */}
-      <rect x="20" y="20" width="80" height="60" rx="4" fill="none" stroke="#06b6d4" strokeWidth="1" opacity="0.4"/>
-      {/* ELA heatmap bands */}
-      {[0,1,2,3,4].map(i=> <rect key={i} x={22+i*15} y={22} width="13" height={56} rx="2" fill="#06b6d4" opacity={0.05+i*0.04}/>)}
-      {/* Hash line */}
-      <text x="115" y="35" fontSize="7" fontFamily="monospace" fill="#10b981" opacity="0.7">SHA-256</text>
-      <text x="115" y="47" fontSize="6" fontFamily="monospace" fill="#10b981" opacity="0.5">3f4a9b2e1c...</text>
-      {/* Scan lines */}
-      {[70,85,100,115,130].map((y,i)=> <rect key={i} x="115" y={y} width={140-i*8} height="2" rx="1" fill="#06b6d4" opacity="0.2"/>)}
-    </svg>
-  ),
-  'Transformer Attention Visualizer': () => (
-    <svg viewBox="0 0 300 160" className="w-full h-full opacity-60" aria-hidden="true">
-      <defs>
-        <linearGradient id="g3" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#8b5cf6" stopOpacity="0.2"/>
-          <stop offset="100%" stopColor="#ec4899" stopOpacity="0.1"/>
-        </linearGradient>
-      </defs>
-      <rect width="300" height="160" fill="url(#g3)"/>
-      {/* Attention arc tokens */}
-      {[40,80,120,160,200,240].map((x,i)=>(
-        <g key={i}>
-          <circle cx={x} cy="120" r="6" fill="#8b5cf6" opacity="0.7"/>
-          <rect x={x-15} y="130" width="30" height="3" rx="1" fill="#8b5cf6" opacity="0.25"/>
-        </g>
-      ))}
-      {/* Arcs */}
-      {[[40,160,0.6],[80,200,0.4],[40,240,0.2],[120,200,0.5],[80,240,0.3]].map(([x1,x2,op],i)=>(
-        <path key={i} d={`M${x1} 120 Q${(x1+x2)/2} 60 ${x2} 120`} fill="none" stroke="#8b5cf6" strokeWidth={op*3} opacity={op*0.7}/>
-      ))}
-      <text x="20" y="25" fontSize="9" fill="#8b5cf6" opacity="0.6" fontFamily="monospace">BERT Attention</text>
-    </svg>
-  ),
-  'PCOD Trend Prediction & Visualization': () => (
-    <svg viewBox="0 0 300 160" className="w-full h-full opacity-60" aria-hidden="true">
-      <defs>
-        <linearGradient id="g4" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.2"/>
-          <stop offset="100%" stopColor="#ef4444" stopOpacity="0.1"/>
-        </linearGradient>
-      </defs>
-      <rect width="300" height="160" fill="url(#g4)"/>
-      {/* Chart axes */}
-      <line x1="30" y1="20" x2="30" y2="130" stroke="#f59e0b" strokeWidth="1.5" opacity="0.4"/>
-      <line x1="30" y1="130" x2="280" y2="130" stroke="#f59e0b" strokeWidth="1.5" opacity="0.4"/>
-      {/* Data line */}
-      <polyline points="30,100 70,85 110,90 150,60 190,70 230,45 270,55" fill="none" stroke="#f59e0b" strokeWidth="2.5" opacity="0.7"/>
-      {/* Area fill */}
-      <polygon points="30,100 70,85 110,90 150,60 190,70 230,45 270,55 270,130 30,130" fill="#f59e0b" opacity="0.08"/>
-      {/* Data points */}
-      {[[30,100],[70,85],[110,90],[150,60],[190,70],[230,45],[270,55]].map(([cx,cy],i)=>
-        <circle key={i} cx={cx} cy={cy} r="3.5" fill="#f59e0b" opacity="0.8"/>
-      )}
-    </svg>
-  ),
+// Project color/icon mapping
+const PROJECT_META = {
+  'Indian Legal AI Assistant': { icon: Scale, accent: 'text-amber-400', bgAccent: 'bg-amber-500/10', borderAccent: 'border-amber-500/20' },
+  'Digital Forensics Platform': { icon: Shield, accent: 'text-blue-400', bgAccent: 'bg-blue-500/10', borderAccent: 'border-blue-500/20' },
+  'Transformer Attention Visualizer': { icon: Brain, accent: 'text-violet-400', bgAccent: 'bg-violet-500/10', borderAccent: 'border-violet-500/20' },
+  'PCOD Trend Prediction & Visualization': { icon: BarChart3, accent: 'text-amber-400', bgAccent: 'bg-amber-500/10', borderAccent: 'border-amber-500/20' },
 };
+
+// Fallback SVG illustration for PCOD (no screenshot)
+function PCODIllustration() {
+  return (
+    <div className="relative w-full h-full flex items-center justify-center">
+      <svg className="absolute inset-0 w-full h-full" viewBox="0 0 300 160">
+        {[40,65,90,115].map(y => <line key={y} x1="30" y1={y} x2="275" y2={y} stroke="rgba(245,158,11,0.08)" strokeWidth="1" />)}
+        <line x1="30" y1="25" x2="30" y2="135" stroke="rgba(245,158,11,0.3)" strokeWidth="1.5" />
+        <line x1="30" y1="135" x2="275" y2="135" stroke="rgba(245,158,11,0.3)" strokeWidth="1.5" />
+        <polygon points="30,105 70,90 110,95 150,65 190,75 230,50 270,60 270,135 30,135" fill="rgba(245,158,11,0.06)" />
+        <polyline points="30,105 70,90 110,95 150,65 190,75 230,50 270,60" fill="none" stroke="#f59e0b" strokeWidth="2.5" opacity="0.7" strokeLinejoin="round" />
+        {[[30,105],[70,90],[110,95],[150,65],[190,75],[230,50],[270,60]].map(([cx,cy],i) => (
+          <circle key={i} cx={cx} cy={cy} r="3.5" fill="#f59e0b" opacity="0.9" />
+        ))}
+        <polyline points="230,50 270,60 290,52" fill="none" stroke="#f59e0b" strokeWidth="1.5" opacity="0.4" strokeDasharray="4 3" />
+      </svg>
+      <div className="absolute top-3 left-5 flex items-center gap-2">
+        <BarChart3 className="w-4 h-4 text-amber-400/50" />
+        <span className="text-[9px] font-mono text-amber-400/50">TREND ANALYSIS</span>
+      </div>
+      <div className="absolute top-3 right-5 flex gap-3">
+        <div className="flex items-center gap-1">
+          <div className="w-3 h-1 bg-amber-500/70 rounded" />
+          <span className="text-[7px] text-amber-400/40">Actual</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <div className="w-3 h-1 bg-amber-500/30 rounded" />
+          <span className="text-[7px] text-amber-400/40">Predicted</span>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 const ALL_CATEGORIES = ['All', 'Full Stack', 'AI / ML', 'Python'];
 
@@ -104,15 +54,6 @@ export default function Projects() {
   const filteredProjects = activeFilter === 'All'
     ? projects
     : projects.filter((p) => p.category.includes(activeFilter));
-
-  const Visual = ({ title }) => {
-    const Component = ProjectVisuals[title];
-    return Component ? (
-      <div className="h-44 bg-slate-900/80 rounded-xl overflow-hidden border border-slate-700/40 mb-6">
-        <Component />
-      </div>
-    ) : null;
-  };
 
   return (
     <section id="projects" className="py-28 border-b border-slate-800 bg-[#0b1120] relative">
@@ -154,64 +95,96 @@ export default function Projects() {
 
         <motion.div layout className="grid md:grid-cols-2 gap-8">
           <AnimatePresence mode="popLayout">
-            {filteredProjects.map((project) => (
-              <motion.div
-                key={project.title}
-                layout
-                initial={{ opacity: 0, scale: 0.92, y: 20 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.92, y: 10 }}
-                transition={{ duration: 0.4, ease: 'easeOut' }}
-                whileHover={{ y: -4 }}
-                className="bg-slate-800/30 border border-slate-700/60 rounded-2xl overflow-hidden hover:border-slate-600/60 hover:bg-slate-800/60 transition-colors group flex flex-col"
-              >
-                {/* Project visual */}
-                <div className="px-6 pt-6">
-                  <Visual title={project.title} />
-                </div>
+            {filteredProjects.map((project) => {
+              const meta = PROJECT_META[project.title] || {};
+              const Icon = meta.icon;
+              const hasImage = !!project.image;
 
-                <div className="px-6 pb-6 flex-grow flex flex-col">
-                  <h3 className="text-xl font-bold text-white mb-3 group-hover:text-blue-400 transition-colors flex items-center gap-2">
-                    {project.title}
-                    <motion.span
-                      initial={{ x: 0, opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      className="opacity-0 group-hover:opacity-100 transition-opacity"
-                    >
-                      <ArrowRight className="w-4 h-4 text-blue-400" />
-                    </motion.span>
-                  </h3>
-                  <p className="text-slate-400 mb-5 leading-relaxed text-sm flex-grow">
-                    {project.description}
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {project.technologies.map((tech) => (
-                      <span
-                        key={tech}
-                        className="px-2.5 py-1 bg-slate-900/80 text-blue-300/80 text-xs rounded-lg border border-blue-900/30 hover:border-blue-500/40 hover:text-blue-300 transition-colors"
-                      >
-                        {tech}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                {(project.github || project.demo) && (
-                  <div className="px-6 py-4 bg-slate-900/50 border-t border-slate-700/50 flex gap-4">
-                    {project.github && (
-                      <a href={project.github} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-sm text-slate-400 hover:text-white transition-colors">
-                        <FaGithub className="w-4 h-4" /> Code
-                      </a>
-                    )}
-                    {project.demo && (
-                      <a href={project.demo} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-sm text-slate-400 hover:text-white transition-colors">
-                        <ExternalLink className="w-4 h-4" /> Live Demo
-                      </a>
+              return (
+                <motion.div
+                  key={project.title}
+                  layout
+                  initial={{ opacity: 0, scale: 0.92, y: 20 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.92, y: 10 }}
+                  transition={{ duration: 0.4, ease: 'easeOut' }}
+                  whileHover={{ y: -4 }}
+                  className="bg-slate-800/30 border border-slate-700/60 rounded-2xl overflow-hidden hover:border-slate-600/60 hover:bg-slate-800/60 transition-colors group flex flex-col"
+                >
+                  {/* Project visual — real screenshot or fallback illustration */}
+                  <div className="px-5 pt-5">
+                    {hasImage ? (
+                      <div className={`rounded-xl overflow-hidden border ${meta.borderAccent || 'border-slate-700/40'} bg-slate-900 shadow-lg`}>
+                        {/* Browser chrome */}
+                        <div className="bg-slate-700/60 px-3 py-2 flex items-center gap-2 border-b border-slate-600/30">
+                          <div className="flex gap-1.5">
+                            <span className="w-2 h-2 rounded-full bg-red-400/60" />
+                            <span className="w-2 h-2 rounded-full bg-yellow-400/60" />
+                            <span className="w-2 h-2 rounded-full bg-green-400/60" />
+                          </div>
+                          <span className="text-[10px] text-slate-500 font-mono truncate">{project.title}</span>
+                        </div>
+                        <img
+                          src={project.image}
+                          alt={project.alt}
+                          loading="lazy"
+                          decoding="async"
+                          className="w-full aspect-[16/9] object-cover object-top"
+                        />
+                      </div>
+                    ) : (
+                      <div className={`h-44 rounded-xl overflow-hidden border ${meta.borderAccent || 'border-slate-700/40'} bg-gradient-to-br from-amber-600/15 to-slate-900 relative`}>
+                        <PCODIllustration />
+                      </div>
                     )}
                   </div>
-                )}
-              </motion.div>
-            ))}
+
+                  <div className="px-6 pb-3 pt-5 flex-grow flex flex-col">
+                    <div className="flex items-center gap-2.5 mb-3">
+                      {Icon && (
+                        <div className={`w-8 h-8 rounded-lg ${meta.bgAccent} border ${meta.borderAccent} flex items-center justify-center`}>
+                          <Icon className={`w-4 h-4 ${meta.accent}`} />
+                        </div>
+                      )}
+                      <h3 className="text-xl font-bold text-white group-hover:text-blue-400 transition-colors flex items-center gap-2">
+                        {project.title}
+                        <motion.span className="opacity-0 group-hover:opacity-100 transition-opacity">
+                          <ArrowRight className="w-4 h-4 text-blue-400" />
+                        </motion.span>
+                      </h3>
+                    </div>
+                    <p className="text-slate-400 mb-5 leading-relaxed text-sm flex-grow">
+                      {project.description}
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {project.technologies.map((tech) => (
+                        <span
+                          key={tech}
+                          className="px-2.5 py-1 bg-slate-900/80 text-blue-300/80 text-xs rounded-lg border border-blue-900/30 hover:border-blue-500/40 hover:text-blue-300 transition-colors"
+                        >
+                          {tech}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  {(project.github || project.demo) && (
+                    <div className="px-6 py-4 bg-slate-900/50 border-t border-slate-700/50 flex gap-4">
+                      {project.github && (
+                        <a href={project.github} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-sm text-slate-400 hover:text-white transition-colors">
+                          <FaGithub className="w-4 h-4" /> Code
+                        </a>
+                      )}
+                      {project.demo && (
+                        <a href={project.demo} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-sm text-slate-400 hover:text-white transition-colors">
+                          <ExternalLink className="w-4 h-4" /> Live Demo
+                        </a>
+                      )}
+                    </div>
+                  )}
+                </motion.div>
+              );
+            })}
           </AnimatePresence>
         </motion.div>
       </div>

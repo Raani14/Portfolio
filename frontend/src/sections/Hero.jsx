@@ -11,8 +11,11 @@ const prefersReducedMotion = () =>
 // All hero showcase images
 const heroSlides = [
   { src: '/images/noah-naturals.png', alt: 'Noah Naturals Shopify storefront developed by Rani Rakesh Gangurde', label: 'Noah Naturals' },
+  { src: '/images/indian-legal-ai.png', alt: 'Indian Legal AI Assistant built by Rani Rakesh Gangurde', label: 'Indian Legal AI' },
   { src: '/images/shabari-naturals.png', alt: 'Shabari Naturals Shopify storefront developed by Rani Rakesh Gangurde', label: 'Shabari Naturals' },
+  { src: '/images/digital-forensics.png', alt: 'Digital Forensics Platform built by Rani Rakesh Gangurde', label: 'Digital Forensics' },
   { src: '/images/niibhz-clothing.png', alt: 'Niibhz Clothing Shopify storefront customized by Rani Rakesh Gangurde', label: 'Niibhz Clothing' },
+  { src: '/images/bert-visualizer.png', alt: 'BERT Attention Visualizer built by Rani Rakesh Gangurde', label: 'BERT Visualizer' },
   { src: '/images/meru-store.png', alt: 'Meru fashion store designed by Rani Rakesh Gangurde', label: 'Meru Store' },
   { src: '/images/elanor-perfume.png', alt: 'Elanor Perfume store designed by Rani Rakesh Gangurde', label: 'Elanor Perfume' },
   { src: '/images/luminescence-store.png', alt: 'Luminescence luxury store designed by Rani Rakesh Gangurde', label: 'Luminescence' },

@@ -63,19 +63,25 @@ export const portfolioData = {
       title: "Indian Legal AI Assistant",
       description: "Full-stack AI legal research platform using NLP, OCR, vector embeddings, and RAG for semantic legal search, document analysis, multilingual support, and AI-driven case recommendations.",
       technologies: ["React.js", "Node.js", "Python", "FastAPI", "MongoDB", "PostgreSQL"],
-      category: ["Full Stack", "AI / ML", "Python"]
+      category: ["Full Stack", "AI / ML", "Python"],
+      image: "/images/indian-legal-ai.png",
+      alt: "Indian Legal AI Assistant — AI-powered legal research platform built by Rani Rakesh Gangurde"
     },
     {
       title: "Digital Forensics Platform",
       description: "Digital forensics web application for image tampering detection, metadata and ELA analysis, SHA-256 hash verification, malware signature scanning, batch analysis, and automated PDF report generation.",
       technologies: ["Python", "Flask", "ExifTool", "OpenCV"],
-      category: ["Full Stack", "Python"]
+      category: ["Full Stack", "Python"],
+      image: "/images/digital-forensics.png",
+      alt: "Digital Forensics Platform — Cyber forensics and threat intelligence platform built by Rani Rakesh Gangurde"
     },
     {
       title: "Transformer Attention Visualizer",
       description: "Interactive visualization tool for BERT attention patterns using heatmaps and arc diagrams for Explainable AI and model interpretation.",
       technologies: ["Python", "PyTorch", "HuggingFace", "FastAPI"],
-      category: ["AI / ML", "Python"]
+      category: ["AI / ML", "Python"],
+      image: "/images/bert-visualizer.png",
+      alt: "BERT Attention Visualizer — Interactive transformer attention pattern visualization built by Rani Rakesh Gangurde"
     },
     {
       title: "PCOD Trend Prediction & Visualization",
