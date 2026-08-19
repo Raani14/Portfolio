@@ -7,6 +7,7 @@ frontend/dist/
 # Environment variables
 .env
 backend/.env
+frontend/.env
 
 # OS files
 .DS_Store

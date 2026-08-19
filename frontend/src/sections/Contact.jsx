@@ -11,7 +11,7 @@ const inputClass = `w-full bg-slate-900/60 border border-slate-700/60 rounded-xl
 
 export default function Contact() {
   const { socials } = portfolioData.hero;
-  const [formData, setFormData] = useState({ name: '', email: '', phone: '', subject: '', message: '' });
+  const [formData, setFormData] = useState({ name: '', email: '', phone: '', subject: '', message: '', _honeypot: '' });
   const [status, setStatus] = useState('idle');
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -24,10 +24,11 @@ export default function Contact() {
     setStatus('loading');
     setErrorMessage('');
     try {
-      const res = await axios.post('http://localhost:5000/api/contact', formData);
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+      const res = await axios.post(`${apiUrl}/api/contact`, formData);
       if (res.data.success) {
         setStatus('success');
-        setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
+        setFormData({ name: '', email: '', phone: '', subject: '', message: '', _honeypot: '' });
       }
     } catch (err) {
       setStatus('error');
@@ -160,6 +161,12 @@ export default function Contact() {
                 <div className="space-y-1.5">
                   <label htmlFor="contact-message" className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Message *</label>
                   <textarea id="contact-message" name="message" required rows="5" value={formData.message} onChange={handleChange} className={`${inputClass} resize-none`} placeholder="Tell me about your project or idea..." />
+                </div>
+
+                {/* Honeypot — invisible to humans, bots fill it */}
+                <div aria-hidden="true" style={{ position: 'absolute', left: '-9999px', opacity: 0, height: 0, overflow: 'hidden' }}>
+                  <label htmlFor="contact-hp">Do not fill this</label>
+                  <input type="text" id="contact-hp" name="_honeypot" tabIndex={-1} autoComplete="off" value={formData._honeypot} onChange={handleChange} />
                 </div>
 
                 {/* Status messages */}
