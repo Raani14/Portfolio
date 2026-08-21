@@ -33,7 +33,7 @@ app.use(cors({
     callback(new Error('Not allowed by CORS'));
   },
   credentials: true, // required for httpOnly cookies
-  methods: ['GET', 'POST', 'DELETE'],
+  methods: ['GET', 'POST', 'PATCH', 'DELETE'],
 }));
 
 // Cookie parser (for admin JWT in httpOnly cookies)
